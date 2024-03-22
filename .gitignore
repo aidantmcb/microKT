@@ -1,0 +1,5 @@
+*.fits
+*.h5
+*.pickle
+*.csv
+__pycache__/*
