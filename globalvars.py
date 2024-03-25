@@ -7,32 +7,32 @@ l0, b0 = (163., -8.0)
 lambda0 = 15272.42
 sigma0 = 1.15
 
-global global_var
-global_var = 'hi'
+# global global_var
+# global_var = 'hi'
 
-global distance 
-distance = np.linspace(0, 800, 800)
+# global distance 
+# distance = np.linspace(0, 800, 800)
 
-global l_
-l_ = np.linspace(l0 - 9., l0 + 9., 800)
-global b_
-b_ = np.linspace(b0 - 9., b0 + 9., 800)
+# global l_
+# l_ = np.linspace(l0 - 9., l0 + 9., 800)
+# global b_
+# b_ = np.linspace(b0 - 9., b0 + 9., 800)
 
-global l, b, d
-l, b, d = np.meshgrid(l_, b_, distance) 
+# global l, b, d
+# l, b, d = np.meshgrid(l_, b_, distance) 
 
-global coords
-coords = SkyCoord(l*u.deg, b*u.deg,
-                  distance=distance*u.pc, frame='galactic')
+# global coords
+# coords = SkyCoord(l*u.deg, b*u.deg,
+#                   distance=distance*u.pc, frame='galactic')
 
-global dustmap 
-import h5py
-with h5py.File('/uufs/astro.utah.edu/common/home/u1371365/DIB_KT_CACloud/edenhofer_out.h5', 'r') as f:
-    edenhofer = np.array(f['data'])
-dustmap = edenhofer
+# global dustmap 
+# import h5py
+# with h5py.File('/uufs/astro.utah.edu/common/home/u1371365/DIB_KT_CACloud/edenhofer_out.h5', 'r') as f:
+#     edenhofer = np.array(f['data'])
+# dustmap = edenhofer
 
-def update_global(var_name, new_val):
-    globals()[var_name] = new_val
+# def update_global(var_name, new_val):
+#     globals()[var_name] = new_val
 
 class DustData: 
     def __init__(self, **kwargs):

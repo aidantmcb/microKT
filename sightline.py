@@ -181,3 +181,8 @@ class Sightline:
         medres_uncertainty_rest = hdul[3].data[5, :]
         medres_uncertainty_obs = resample_interp(medres_uncertainty_rest,rv )
         return np.sqrt(flux_uncertainty_obs**2 + medres_uncertainty_obs**2)
+    
+######## 
+    
+
+

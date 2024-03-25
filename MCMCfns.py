@@ -1,7 +1,5 @@
 import numpy as np
 
-
-
 def loglikely_2(v, av, sl, **kwargs):
 
     # v = p[:int(len(p)/2)]
@@ -136,16 +134,11 @@ class Logprior_Foreground:
         self.pointfit = self.logprior_foregroundpolynomial2d(l, b)
         self.pointfit_width = 1
 
-    def polynomial2d(self, x1, x2, theta = None):  
+    def polynomial2d(self, x1, x2, theta = None, uncert = None):  
         if theta is None:
-            theta = np.array([5.76803551, -0.93688804, -0.83121174, -0.18054651, -0.02163556, -0.2999652])
-            uncert = np.sqrt(np.diag(np.array(
-                [[ 3.73734579e+00, -2.15312709e+00,  3.77688040e-01, -1.09780155e-01,  2.73540008e-01, -9.40627449e-02],
-                [-2.15312709e+00,  2.07232236e+00, -1.47408631e-01, 1.52590867e-02, -3.18111493e-01, -6.05259982e-02],
-                [ 3.77688040e-01, -1.47408631e-01,  1.14152006e+00, -2.94225460e-01, -8.72619885e-04,  4.27465860e-02],
-                [-1.09780155e-01,  1.52590867e-02, -2.94225460e-01, 1.03988171e-01,  8.01196096e-03,  2.89406984e-03],  
-                [ 2.73540008e-01, -3.18111493e-01, -8.72619885e-04, 8.01196096e-03,  5.37180547e-02,  1.06799789e-02],
-                [-9.40627449e-02, -6.05259982e-02,  4.27465860e-02, 2.89406984e-03,  1.06799789e-02,  7.81419107e-02]])))
+            theta = np.array([5.03964666, -1.04129592, -0.72842925, -0.20292219,  0.0206567,  -0.14442016])
+        if uncert is None:
+            uncert = 2.404363059339516
         x1 = x1 - 160 # FOR CA CLOUD SPECIFICIALLY
         x2 = x2 + 8 # DITTO
         X = np.array([[np.ones(len(x1)), x1, x2, x1 * x2, x1**2, x2**2]]).T
