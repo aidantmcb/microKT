@@ -3,3 +3,5 @@
 *.pickle
 *.csv
 __pycache__/*
+RUNS/
+RUNS_FG/
