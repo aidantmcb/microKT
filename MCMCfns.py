@@ -131,8 +131,8 @@ def logprior_foreground(l, b, distance, sl, foreground_distance = 400, **kwargs)
 
 class Logprior_Foreground:
     def __init__(self, l, b):
-        self.pointfit = self.logprior_foregroundpolynomial2d(l, b)
-        self.pointfit_width = 1
+        self.pointfit = self.polynomial2d(l, b)
+        self.pointfit_width = 2.404363059339516
 
     def polynomial2d(self, x1, x2, theta = None, uncert = None):  
         if theta is None:
@@ -141,17 +141,17 @@ class Logprior_Foreground:
             uncert = 2.404363059339516
         x1 = x1 - 160 # FOR CA CLOUD SPECIFICIALLY
         x2 = x2 + 8 # DITTO
-        X = np.array([[np.ones(len(x1)), x1, x2, x1 * x2, x1**2, x2**2]]).T
+        X = np.array([[np.ones(np.array(x1).shape), x1, x2, x1 * x2, x1**2, x2**2]]).T
         matrix = X * theta[:, np.newaxis]
         return np.nansum(matrix, axis = 1)
     
-    def logprior_foreground_v(v, distance, sl, foreground_distance = 400, **kwargs):    
+    def logprior_foreground_v(v, distance, foreground_distance = 400, **kwargs):    
         foreground = distance <= foreground_distance
         prior_val = np.zeros(distance.shape)
         prior_val[foreground] = np.nansum(- 0.5 * np.nansum((v - self.pointfit)**2 / (self.pointfit_width**2)))[foreground]
         return prior_val
         
-    def logprior_foreground_av(av, distance, sl, foreground_distance = 400):
+    def logprior_foreground_av(av, distance, foreground_distance = 400):
         foreground = distance <= foreground_distance
         prior_val = np.zeros(distance.shape)
         ampfit = (0.01928233, 0.01431857)
@@ -161,14 +161,12 @@ class Logprior_Foreground:
 
 
 class BayesFramework:
-    def __init__(self, sl, **kwargs):
-        self.signals = sl.signals
-        self.signal_errs = sl.signal_errs
-
-        
+    def __init__(self, **kwargs):
+        return
 
     def add_logprior(self):
         return
     
     def add_logprob(self):
         return
+    
