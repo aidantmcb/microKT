@@ -139,25 +139,28 @@ class Logprior_Foreground:
             theta = np.array([5.03964666, -1.04129592, -0.72842925, -0.20292219,  0.0206567,  -0.14442016])
         if uncert is None:
             uncert = 2.404363059339516
+        if np.array(x1).ndim != 1:
+            x1 = np.array([x1])
+            x2 = np.array([x2])
         x1 = x1 - 160 # FOR CA CLOUD SPECIFICIALLY
         x2 = x2 + 8 # DITTO
         X = np.array([[np.ones(np.array(x1).shape), x1, x2, x1 * x2, x1**2, x2**2]]).T
         matrix = X * theta[:, np.newaxis]
-        return np.nansum(matrix, axis = 1)
+        return np.nansum(matrix, axis =1).item()
     
-    def logprior_foreground_v(v, distance, foreground_distance = 400, **kwargs):    
+    def logprior_foreground_v(self, v, distance, foreground_distance = 400, **kwargs):    
         foreground = distance <= foreground_distance
         prior_val = np.zeros(distance.shape)
-        prior_val[foreground] = np.nansum(- 0.5 * np.nansum((v - self.pointfit)**2 / (self.pointfit_width**2)))[foreground]
-        return prior_val
+        prior_val[foreground] = np.nansum(- 0.5 * np.nansum((v - self.pointfit.item)**2 / (self.pointfit_width**2)))
+        return prior_val.item()
         
-    def logprior_foreground_av(av, distance, foreground_distance = 400):
+    def logprior_foreground_av(self, av, distance, foreground_distance = 400):
         foreground = distance <= foreground_distance
         prior_val = np.zeros(distance.shape)
         ampfit = (0.01928233, 0.01431857)
         avf = lambda x, mu, sigma :  -(x - mu)**2 / (2 * sigma**2)
-        prior_val[foreground] = - 0.5 * np.nansum((av - ampfit[0])**2 / (ampfit[1]**2))[foreground]
-        return prior_val
+        prior_val[foreground] = - 0.5 * np.nansum((av - ampfit[0])**2 / (ampfit[1]**2))
+        return prior_val.item()
 
 
 class BayesFramework:

@@ -37,13 +37,14 @@ def generateResidual(aspcap, medres, apstar, rv):
     spectrum = aspcap[1].data
     model = aspcap[3].data
     err = aspcap[2].data
-    medres_model = np.array(medres[1].data)
-    medres_err = np.array(medres[3].data)
     bitmask = apstar[3].data[0, :]
 
     if medres[1].data is None:
         medres_model = np.ones(spectrum.shape)
         medres_err =np.zeros(spectrum.shape)
+    else:
+        medres_model = np.array(medres[1].data)
+        medres_err = np.array(medres[3].data)
 
     mask_digits = [0, 1, 2, 9, 12, 13] # 0 BADPIX, 1 CRPIX, 2 SATPIX, 9 PERSIST_HIGH, 12 SIG_SKYLINE, 13 SIG_TELLURIC
     mask = np.zeros(bitmask.shape)
