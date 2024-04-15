@@ -186,3 +186,80 @@ class Sightline:
     
 
 
+class ForegroundModifiedSightline(Sightline):
+    def __init__(self, stars, coords = None, dAVdd = None, dfore = 400, **kwargs):
+        # self.all_stars = stars
+        self.stars = stars[stars['DIST'] > dfore]
+        dist = self.stars['DIST']
+
+        self.make_fgbins()
+        self.bin_inds = np.digitize(dist, self.bins)
+
+        if coords is not None:
+            self.l, self.b = coords
+        else:
+            self.l, self.b = (np.nanmean(self.stars['GLON']), np.nanmean(self.stars['GLAT']))
+        
+        self.rvelo = np.zeros(len(self.bins) - 1)
+        self.get_DIBs(**kwargs)
+
+        # self.init_signals = self.model_signals(self.rvelo, self.dAVdd)
+        self.ndim = len(self.voxel_dAVdd)
+        self.nsig = len(self.stars)
+
+        self.test_init_signals = self.model_signals_fg(self.rvelo, self.dAVdd)
+
+    def make_fgbins(self, binsep = 10, dfore = 400, **kwargs):
+        dmin = 0 # start bins at 0pc
+        dist = self.stars['DIST']
+        bins = np.sort(np.insert(np.delete(dist, np.where(dist <= dmin)[0]), [0,1], [dmin, dfore]))
+        # print('BINS BEFORE THING', bins)
+        i = 0
+        while i >= 0:
+            try:
+                next_bin = np.min(bins[bins > bins[i]])
+            except:
+                print('broke:')
+                print(bins[bins > bins[i]])
+                print(len(self.stars))
+
+            bins[i+1] = np.max([next_bin, bins[i] + binsep]) + 0.01
+            if bins[i+1] >= np.max(dist):
+                bins = bins[:i+2]
+                i = -np.inf
+            i = i+1
+        
+        self.bins = bins
+
+    def model_signals_fg(self, rvelo, dAVdd=None, binsep = None):
+        if dAVdd is None:
+            dAVdd = self.dAVdd
+        if binsep is None:
+            binsep = self.bins[1:]-self.bins[:-1]
+        signals = np.zeros((len(self.stars), len(wavs_window)))
+        peak_wavelength = dopplershift(rvelo)
+        wavs_grid = np.tile(wavs_window, (len(self.bins)-1, 1))
+        voxel_DIB_unscaled = np.exp(-(wavs_grid - peak_wavelength[:, np.newaxis])**2 / (2 * sigma0**2))
+        amp = differentialAmplitude(dAVdd, binsep)
+
+        def single_signal(amp, bindex):
+            amp[bindex :] = 0 # THIS MIGHT NEED TO BE -1
+
+            voxel_DIB_scaled = -voxel_DIB_unscaled *  amp[:, np.newaxis] 
+            summed_DIB = np.sum(voxel_DIB_scaled, axis = 0)
+            # continuum = lambda x, m, b : m * (x - lambda0) + b
+            # cont = continuum(wavs_window, 0, b)
+            return summed_DIB  + 1
+
+
+        for i in range(len(self.stars)):
+            star = self.stars[i]
+            dAVdd_star = dAVdd[i, :]
+            # amp = Differential_Amplitude(dAVdd_star, self.bins[1:]-self.bins[:-1])
+            amp = differentialAmplitude(dAVdd_star, 1)
+
+            bin_index = self.bin_inds[i]
+            # signals[i, :] = single_signal(bin_index)
+            signals[i, :] = single_signal(amp, bin_index)
+        return signals
+

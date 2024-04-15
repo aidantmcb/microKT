@@ -105,3 +105,50 @@ class BayesFramework:
     def add_logprob(self):
         return
     
+############################################### 
+    
+class Logprior_Foreground:
+    def __init__(self, l, b):
+        self.pointfit = self.polynomial2d(l, b)
+        self.pointfit_width = 2.404363059339516
+
+    def polynomial2d(self, x1, x2, theta = None, uncert = None):  
+        if theta is None:
+            theta = np.array([5.03964666, -1.04129592, -0.72842925, -0.20292219,  0.0206567,  -0.14442016])
+        if uncert is None:
+            uncert = 2.404363059339516
+        if np.array(x1).ndim != 1:
+            x1 = np.array([x1])
+            x2 = np.array([x2])
+        x1 = x1 - 160 # FOR CA CLOUD SPECIFICIALLY
+        x2 = x2 + 8 # DITTO
+        X = np.array([[np.ones(np.array(x1).shape), x1, x2, x1 * x2, x1**2, x2**2]]).T
+        matrix = X * theta[:, np.newaxis]
+        return np.nansum(matrix, axis =1).item()
+    
+    def logprior_foreground_v(self, v, distance, foreground_distance = 401, **kwargs):    
+        foreground = distance <= foreground_distance
+        prior_val = np.zeros(distance.shape)
+
+        prior_val[foreground] = (- 0.5 * (v - self.pointfit)**2 / (self.pointfit_width**2))[foreground]
+        return np.nansum(prior_val)
+        
+    def logprior_foreground_av(self, av, distance, foreground_distance = 400):
+        foreground = distance <= foreground_distance
+        prior_val = np.zeros(distance.shape)
+        ampfit = (0.01928233, 0.01431857)
+        avf = lambda x, mu, sigma :  -(x - mu)**2 / (2 * sigma**2)
+        prior_val[foreground] = - 0.5 * np.nansum((av - ampfit[0])**2 / (ampfit[1]**2))[foreground]
+        return np.nansum(prior_val)
+
+
+def logprob_fg(p, sl, lp_fore = None, **kwargs):
+    ndim = len(sl.voxel_dAVdd)
+    
+    lprob = logprob_2(p, sl, **kwargs)
+    v = p[ :ndim]
+    av = p[ndim:].reshape(-1, ndim)
+
+    lp_fore_v = lp_fore.logprior_foreground_v(v, sl.bins[1:])
+    # lp_fore_av = lp_fore.logprior_foreground_av(av, sl.bins[1:])
+    return lprob + lp_fore_v #+ lp_fore_av
