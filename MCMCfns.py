@@ -40,6 +40,12 @@ def logprior_davdd_reg_group(av,sl, mask = None,  width_factor = 3, **kwargs):
     lp_val = - np.nansum(np.log(np.sqrt(2 * np.pi))) + np.nansum(- 0.5 * np.nansum((av - avmed)**2 / (2 * (width_factor * avstd)**2)))# first part might not be needed
     return lp_val
 
+def logprior_davdd_min(av):
+    if np.any(av < 0.1):
+        return -np.inf
+    else:
+        return 0.0
+
 
 def logprob_2(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs):
     ndim = len(sl.voxel_dAVdd)
@@ -148,6 +154,10 @@ def logprob_fg(p, sl, lp_fore = None, **kwargs):
     lprob = logprob_2(p, sl, **kwargs)
     v = p[ :ndim]
     av = p[ndim:].reshape(-1, ndim)
+
+    ### Added 05.08 ###
+    lprior_av_min = logprior_davdd_min(av)
+    lprob = lprob + lprior_av_min
 
     lp_fore_v = lp_fore.logprior_foreground_v(v, sl.bins[1:])
     # lp_fore_av = lp_fore.logprior_foreground_av(av, sl.bins[1:])

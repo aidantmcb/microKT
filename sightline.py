@@ -57,7 +57,7 @@ class Sightline:
         
         self.bins = bins
             
-    def get_DIBs(self, MADGICS = False, **kwargs):
+    def get_DIBs(self, MADGICS = False, alternative_data_processing = None, **kwargs):
         signals = np.zeros((len(self.stars), len(wavs_window)))
         signal_errs = np.zeros((len(self.stars), len(wavs_window)))
         dAVdd = np.zeros((len(self.stars), len(self.bins)-1))
@@ -102,6 +102,9 @@ class Sightline:
                 # # if 
                 # errs = resample_interp(errs, rv = np.median(res_hdul_m[3].data['MADGICS_VBARY']))
                 # signal_errs[i, :] = errs[window]
+            
+            # if alternative_data_processing is not None:
+            #     signals[i, :], signal_errs[i, :] = alternative_data_processing()
 
 
 
@@ -262,4 +265,3 @@ class ForegroundModifiedSightline(Sightline):
             # signals[i, :] = single_signal(bin_index)
             signals[i, :] = single_signal(amp, bin_index)
         return signals
-
