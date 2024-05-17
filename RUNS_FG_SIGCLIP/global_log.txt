@@ -1,3 +1,21 @@
 -------------------------------------------- 
 kt_0513a 20 runs, otherwise same as above
  
+-------------------------------------------- 
+kt_0515a
+ 
+-------------------------------------------- 
+kt_0516a4 test runs using a foreground specific extinction prior
+ 
+-------------------------------------------- 
+kt_0516bquick 4 rest runs with av foreground prior, this time set to 1/2 mean value as previous
+ 
+-------------------------------------------- 
+kt_0516a4 runs with foreground av prior (was commented out earlier)
+ 
+-------------------------------------------- 
+kt_0516buhhhh I ran code and I"m going to scion 
+ 
+-------------------------------------------- 
+kt_0516ctest run, increasing the step size (a parameter) from 2 to 4 (previous run was 1, which was garbage)
+ 

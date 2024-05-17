@@ -28,7 +28,9 @@ def logprior_davdd_reg(av,sl, mask = None, **kwargs):
     av[mask] = np.nan
     avmed = sl.voxel_dAVdd
     avstd = sl.voxel_dAVdd_std * 10 # should be 10
-    lp_val = -np.nansum(np.log(np.sqrt(2 * np.pi))) + np.nansum(- 0.5 * np.nansum((av - avmed)**2 / (2 * avstd**2)))# first part might not be needed
+    # lp_val = -np.nansum(np.log(np.sqrt(2 * np.pi))) + np.nansum(- 0.5 * np.nansum((av - avmed)**2 / (2 * avstd**2)))# first part might not be needed
+    lp_val =  np.nansum(- 0.5 * np.nansum((av - avmed)**2 / (2 * avstd**2)))# first part might not be needed
+
     return lp_val
 
 def logprior_davdd_reg_group(av,sl, mask = None,  width_factor = 3, **kwargs):
@@ -37,7 +39,9 @@ def logprior_davdd_reg_group(av,sl, mask = None,  width_factor = 3, **kwargs):
     av[mask] = np.nan
     avmed = np.nanmedian(av, axis = 0,)
     avstd = sl.voxel_dAVdd_std
-    lp_val = - np.nansum(np.log(np.sqrt(2 * np.pi))) + np.nansum(- 0.5 * np.nansum((av - avmed)**2 / (2 * (width_factor * avstd)**2)))# first part might not be needed
+    # lp_val = - np.nansum(np.log(np.sqrt(2 * np.pi))) + np.nansum(- 0.5 * np.nansum((av - avmed)**2 / (2 * (width_factor * avstd)**2)))# first part might not be needed
+    lp_val =  np.nansum(- 0.5 * np.nansum((av - avmed)**2 / (2 * (width_factor * avstd)**2)))# first part might not be needed
+
     return lp_val
 
 def logprior_davdd_min(av):
@@ -47,17 +51,17 @@ def logprior_davdd_min(av):
         return 0.0
 
 
-def logprob_2(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs):
-    ndim = len(sl.voxel_dAVdd)
-    v = p[ :ndim]
-    av = p[ndim:].reshape(-1, ndim)
-    lp = logprior(v, **kwargs)
-    lp_davdd = logprior_davdd(av, AV_base = sl.dAVdd)
-    lp_davdd_reg = logprior_davdd_reg(av, sl, **kwargs)
-    lp_davdd_reg_group = logprior_davdd_reg_group(av, sl)
-    if (not np.isfinite(lp)) | (not np.isfinite(lp_davdd)) | (not np.isfinite(lp_davdd_reg)):
-        return -np.inf
-    return lp + lp_davdd + lp_davdd_reg +  loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
+# def logprob_2(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs):
+#     ndim = len(sl.voxel_dAVdd)
+#     v = p[ :ndim]
+#     av = p[ndim:].reshape(-1, ndim)
+#     lp = logprior(v, **kwargs)
+#     lp_davdd = logprior_davdd(av, AV_base = sl.dAVdd)
+#     lp_davdd_reg = logprior_davdd_reg(av, sl, **kwargs)
+#     lp_davdd_reg_group = logprior_davdd_reg_group(av, sl)
+#     if (not np.isfinite(lp)) | (not np.isfinite(lp_davdd)) | (not np.isfinite(lp_davdd_reg)):
+#         return -np.inf
+#     return lp + lp_davdd + lp_davdd_reg +  loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
 
 def logprob_avfix(p,sl, av = None,  logprior = logprior_v, loglikely = loglikely_2, **kwargs):
     ndim = len(sl.voxel_dAVdd)
@@ -103,12 +107,14 @@ class Logprior_Foreground:
 
 class BayesFramework:
     def __init__(self, **kwargs):
+        self.log_likelihood = None
+        self.log_priors = None
         return
 
     def add_logprior(self):
         return
     
-    def add_logprob(self):
+    def logprob(self, p, **kwargs):
         return
     
 ############################################### 
@@ -139,13 +145,33 @@ class Logprior_Foreground:
         prior_val[foreground] = (- 0.5 * (v - self.pointfit)**2 / (self.pointfit_width**2))[foreground]
         return np.nansum(prior_val)
         
-    def logprior_foreground_av(self, av, distance, foreground_distance = 400):
+    # def logprior_foreground_av(self, av, distance, foreground_distance = 401):
+    #     foreground = distance <= foreground_distance
+    #     prior_val = np.zeros(distance.shape)
+    #     ampfit = [0.5 * 0.01928233, 0.5 * 0.01431857]
+    #     avf = lambda x, mu, sigma :  -(x - mu)**2 / (2 * sigma**2)
+    #     prior_val[foreground] = - 0.5 * np.nansum((av[:, foreground] - ampfit[0])**2 / (ampfit[1]**2))
+    #     return np.nansum(prior_val)
+
+    def logprior_foreground_av(self, av, distance, foreground_distance = 401):
         foreground = distance <= foreground_distance
-        prior_val = np.zeros(distance.shape)
-        ampfit = (0.01928233, 0.01431857)
-        avf = lambda x, mu, sigma :  -(x - mu)**2 / (2 * sigma**2)
-        prior_val[foreground] = - 0.5 * np.nansum((av - ampfit[0])**2 / (ampfit[1]**2))[foreground]
-        return np.nansum(prior_val)
+        if np.any(av[:, foreground] > 0.8):
+            return -np.inf
+        return 0.0
+
+
+
+def logprob_2(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs): ## NEW AS OF 05.16LIke.
+    ndim = len(sl.voxel_dAVdd)
+    v = p[ :ndim]
+    av = p[ndim:].reshape(-1, ndim)
+    lp = logprior(v, **kwargs)
+    lp_davdd = logprior_davdd(av, AV_base = sl.dAVdd)
+    lp_davdd_reg = logprior_davdd_reg(av, sl, **kwargs)
+    lp_davdd_reg_group = logprior_davdd_reg_group(av, sl)
+    if (not np.isfinite(lp)) | (not np.isfinite(lp_davdd)) | (not np.isfinite(lp_davdd_reg)):
+        return -np.inf
+    return lp + lp_davdd  + lp_davdd_reg + loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
 
 
 def logprob_fg(p, sl, lp_fore = None, **kwargs):
@@ -153,12 +179,12 @@ def logprob_fg(p, sl, lp_fore = None, **kwargs):
     
     lprob = logprob_2(p, sl, **kwargs)
     v = p[ :ndim]
-    av = p[ndim:].reshape(-1, ndim)
+    av = p[ndim:].reshape(-1, ndim) #what shape is dAVddd? 
 
     ### Added 05.08 ###
     lprior_av_min = logprior_davdd_min(av)
     lprob = lprob + lprior_av_min
 
     lp_fore_v = lp_fore.logprior_foreground_v(v, sl.bins[1:])
-    # lp_fore_av = lp_fore.logprior_foreground_av(av, sl.bins[1:])
-    return lprob + lp_fore_v #+ lp_fore_av
+    lp_fore_av = lp_fore.logprior_foreground_av(av, sl.bins[1:])
+    return lprob + lp_fore_v + lp_fore_av
