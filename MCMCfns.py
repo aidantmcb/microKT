@@ -145,19 +145,19 @@ class Logprior_Foreground:
         prior_val[foreground] = (- 0.5 * (v - self.pointfit)**2 / (self.pointfit_width**2))[foreground]
         return np.nansum(prior_val)
         
-    # def logprior_foreground_av(self, av, distance, foreground_distance = 401):
-    #     foreground = distance <= foreground_distance
-    #     prior_val = np.zeros(distance.shape)
-    #     ampfit = [0.5 * 0.01928233, 0.5 * 0.01431857]
-    #     avf = lambda x, mu, sigma :  -(x - mu)**2 / (2 * sigma**2)
-    #     prior_val[foreground] = - 0.5 * np.nansum((av[:, foreground] - ampfit[0])**2 / (ampfit[1]**2))
-    #     return np.nansum(prior_val)
-
     def logprior_foreground_av(self, av, distance, foreground_distance = 401):
         foreground = distance <= foreground_distance
-        if np.any(av[:, foreground] > 0.8):
-            return -np.inf
-        return 0.0
+        prior_val = np.zeros(distance.shape)
+        ampfit = [0.5 * 0.01928233, 0.5 * 0.01431857]
+        avf = lambda x, mu, sigma :  -(x - mu)**2 / (2 * sigma**2)
+        prior_val[foreground] = - 0.5 * np.nansum((av[:, foreground] - ampfit[0])**2 / (ampfit[1]**2))
+        return np.nansum(prior_val)
+
+    # def logprior_foreground_av(self, av, distance, foreground_distance = 401):
+    #     foreground = distance <= foreground_distance
+    #     if np.any(av[:, foreground] > 0.8):
+    #         return -np.inf
+    #     return 0.0
 
 
 
@@ -186,5 +186,5 @@ def logprob_fg(p, sl, lp_fore = None, **kwargs):
     lprob = lprob + lprior_av_min
 
     lp_fore_v = lp_fore.logprior_foreground_v(v, sl.bins[1:])
-    lp_fore_av = lp_fore.logprior_foreground_av(av, sl.bins[1:])
-    return lprob + lp_fore_v + lp_fore_av
+    # lp_fore_av = lp_fore.logprior_foreground_av(av, sl.bins[1:])
+    return lprob + lp_fore_v #+ lp_fore_av
