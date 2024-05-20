@@ -19,3 +19,12 @@ kt_0516buhhhh I ran code and I"m going to scion
 -------------------------------------------- 
 kt_0516ctest run, increasing the step size (a parameter) from 2 to 4 (previous run was 1, which was garbage)
  
+-------------------------------------------- 
+kt_0517c
+ 
+-------------------------------------------- 
+kt_0517a5 test runs with standard priors, but with 2 * likelihood
+ 
+-------------------------------------------- 
+kt_0517bsame as last run but with 4 * likelihood
+ 
