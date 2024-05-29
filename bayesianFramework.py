@@ -33,7 +33,7 @@ def logprobability(p, sl, **kwargs):
     av = p[ndim:2*ndim]
     av_offset = p[2*ndim:]
     # av_spread = av * np.ones((nstar, ndim)) + av_offset
-    av_spread = av[np.newaxis, :] * np.ones((nstar, ndim)) + av_offset
+    av_spread = np.repeat(av, nstar) + av_offset
     llikely = loglikelyhood(v, av_spread, sl)
     lprior_v = logprior_velocity(v)
     lprior_av = logprior_davdd(av, av_spread)
