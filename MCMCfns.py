@@ -167,11 +167,11 @@ def logprob_2(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs): 
     av = p[ndim:].reshape(-1, ndim)
     lp = logprior(v, **kwargs)
     lp_davdd = logprior_davdd(av, AV_base = sl.dAVdd)
-    lp_davdd_reg = logprior_davdd_reg(av, sl, **kwargs)
-    lp_davdd_reg_group = logprior_davdd_reg_group(av, sl)
+    lp_davdd_reg = 0.0# logprior_davdd_reg(av, sl, **kwargs)
+    lp_davdd_reg_group = 0.0 # logprior_davdd_reg_group(av, sl)
     if (not np.isfinite(lp)) | (not np.isfinite(lp_davdd)) | (not np.isfinite(lp_davdd_reg)):
         return -np.inf
-    return lp + lp_davdd  + lp_davdd_reg + 4 * loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
+    return lp + lp_davdd  + lp_davdd_reg + loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
 
 
 def logprob_fg(p, sl, lp_fore = None, **kwargs):
