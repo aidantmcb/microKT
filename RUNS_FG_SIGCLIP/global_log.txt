@@ -28,3 +28,12 @@ kt_0517a5 test runs with standard priors, but with 2 * likelihood
 -------------------------------------------- 
 kt_0517bsame as last run but with 4 * likelihood
  
+-------------------------------------------- 
+kt_0530a
+ 
+-------------------------------------------- 
+kt_0530brun with a(V) coupling to dustmap but NOT to self (no updating objective fns)
+ 
+-------------------------------------------- 
+kt_0531a15 sls, 1250 steps. all coupling priors, plus a minimum dAVdd of 0.075
+ 
