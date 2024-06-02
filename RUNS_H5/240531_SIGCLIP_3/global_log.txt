@@ -1,0 +1,3 @@
+-------------------------------------------- 
+kt_0601a15 sightlines, sig clip threshold 3 sig, just spitballing a bit 
+ 
