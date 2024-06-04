@@ -1,3 +1,6 @@
 -------------------------------------------- 
 kt_0601a15 sightlines, sig clip threshold 3 sig, just spitballing a bit 
  
+-------------------------------------------- 
+kt_0602atest run, same as 0601a but where I did NOT add uncert from medres
+ 
