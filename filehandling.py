@@ -33,7 +33,6 @@ def getASPCAP(row):
     telescope = np.array(row['TELESCOPE'], dtype = str)
     field = np.array(row['FIELD'], dtype = str)
     sourceid = np.array(row['APOGEE_ID'], dtype = str)
-#     length = len(sourceid)
     path = (specdir + specname).format(TELESCOPE = telescope, FIELD = field, SOURCEID = sourceid)
     return path
 

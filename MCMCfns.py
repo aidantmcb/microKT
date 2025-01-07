@@ -188,3 +188,25 @@ def logprob_fg(p, sl, lp_fore = None, **kwargs):
     lp_fore_v = lp_fore.logprior_foreground_v(v, sl.bins[1:])
     # lp_fore_av = lp_fore.logprior_foreground_av(av, sl.bins[1:])
     return lprob + lp_fore_v #+ lp_fore_av
+
+# def logprob_2(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs): ## NEW AS OF 05.16LIke.
+#     ndim = len(sl.voxel_dAVdd)
+#     v = p[ :ndim]
+#     av = p[ndim:].reshape(-1, ndim)
+#     # lp = logprior(v, **kwargs)
+#     lp_davdd = logprior_davdd(av, AV_base = sl.dAVdd)
+#     lp_davdd_reg = logprior_davdd_reg(av, sl, **kwargs)
+#     lp_davdd_reg_group = logprior_davdd_reg_group(av, sl)
+#     if (not np.isfinite(lp)) | (not np.isfinite(lp_davdd)) | (not np.isfinite(lp_davdd_reg)):
+#         return -np.inf
+#     return  lp_davdd  + lp_davdd_reg + loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
+
+# def loglikely_2_example(av, data = data, sigma = err, **kwargs):
+#     val = - 0.5 * np.nansum((data - model(av))**2 / (sigma**2)) 
+#     return val
+
+
+# def logprob(av **kwargs): 
+#     lp = logprior(av, **kwargs)
+#     ll = loglikelihood(av, **kwargs) 
+#     return lp  + ll
