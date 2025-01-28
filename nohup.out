@@ -1,14 +1,2 @@
-Traceback (most recent call last):
-  File "/uufs/astro.utah.edu/common/home/u1371365/.local/bin/jupyter-nbconvert", line 8, in <module>
-    sys.exit(main())
-  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/jupyter_core/application.py", line 283, in launch_instance
-    super().launch_instance(argv=argv, **kwargs)
-  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/traitlets/config/application.py", line 1075, in launch_instance
-    app.start()
-  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/nbconvertapp.py", line 420, in start
-    self.convert_notebooks()
-  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/nbconvertapp.py", line 582, in convert_notebooks
-    raise ValueError(msg)
-ValueError: Please specify an output format with '--to <format>'.
-The following formats are available: ['asciidoc', 'custom', 'html', 'latex', 'markdown', 'notebook', 'pdf', 'python', 'qtpdf', 'qtpng', 'rst', 'script', 'slides', 'webpdf']
 [NbConvertApp] Converting notebook 250109_SigClipKT_EmissionThreshold.ipynb to notebook
+[NbConvertApp] Writing 6735472 bytes to 250109_SigClipKT_EmissionThreshold.ipynb
