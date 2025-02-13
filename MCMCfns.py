@@ -44,8 +44,8 @@ def logprior_davdd_reg_group(av,sl, mask = None,  width_factor = 3, **kwargs):
 
     return lp_val
 
-def logprior_davdd_min(av):
-    if np.any(av < 0.075):
+def logprior_davdd_min(av, minval = 0.075):
+    if np.any(av < minval):
         return -np.inf
     else:
         return 0.0
@@ -182,7 +182,7 @@ def logprob_fg(p, sl, lp_fore = None, **kwargs):
     av = p[ndim:].reshape(-1, ndim) #what shape is dAVddd? 
 
     ### Added 05.08 ###
-    lprior_av_min = logprior_davdd_min(av)
+    lprior_av_min = logprior_davdd_min(av, **kwargs)
     lprob = lprob + lprior_av_min
 
     lp_fore_v = lp_fore.logprior_foreground_v(v, sl.bins[1:])

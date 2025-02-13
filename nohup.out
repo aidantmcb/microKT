@@ -1,3 +1,78 @@
 [NbConvertApp] Converting notebook 250109_SigClipKT_EmissionThreshold.ipynb to notebook
-[NbConvertApp] Writing 6735472 bytes to 250109_SigClipKT_EmissionThreshold.ipynb
-[NbConvertApp] Converting notebook 250212_SigClipKT_EmissionThresholdNoFG.ipynb to notebook
+Traceback (most recent call last):
+  File "/uufs/chpc.utah.edu/sys/installdir/r8/python/3.10.3/bin/jupyter-nbconvert", line 8, in <module>
+    sys.exit(main())
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/jupyter_core/application.py", line 283, in launch_instance
+    super().launch_instance(argv=argv, **kwargs)
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/traitlets/config/application.py", line 1075, in launch_instance
+    app.start()
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/nbconvertapp.py", line 420, in start
+    self.convert_notebooks()
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/nbconvertapp.py", line 597, in convert_notebooks
+    self.convert_single_notebook(notebook_filename)
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/nbconvertapp.py", line 563, in convert_single_notebook
+    output, resources = self.export_single_notebook(
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/nbconvertapp.py", line 487, in export_single_notebook
+    output, resources = self.exporter.from_filename(
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/exporters/exporter.py", line 201, in from_filename
+    return self.from_file(f, resources=resources, **kw)
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/exporters/exporter.py", line 220, in from_file
+    return self.from_notebook_node(
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/exporters/notebook.py", line 36, in from_notebook_node
+    nb_copy, resources = super().from_notebook_node(nb, resources, **kw)
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/exporters/exporter.py", line 154, in from_notebook_node
+    nb_copy, resources = self._preprocess(nb_copy, resources)
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/exporters/exporter.py", line 353, in _preprocess
+    nbc, resc = preprocessor(nbc, resc)
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/preprocessors/base.py", line 48, in __call__
+    return self.preprocess(nb, resources)
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/preprocessors/execute.py", line 103, in preprocess
+    self.preprocess_cell(cell, resources, index)
+  File "/uufs/astro.utah.edu/common/home/u1371365/.local/lib/python3.10/site-packages/nbconvert/preprocessors/execute.py", line 124, in preprocess_cell
+    cell = self.execute_cell(cell, index, store_history=True)
+  File "/uufs/chpc.utah.edu/sys/installdir/r8/python/3.10.3/lib/python3.10/site-packages/nbclient/util.py", line 84, in wrapped
+    return just_run(coro(*args, **kwargs))
+  File "/uufs/chpc.utah.edu/sys/installdir/r8/python/3.10.3/lib/python3.10/site-packages/nbclient/util.py", line 62, in just_run
+    return loop.run_until_complete(coro)
+  File "/uufs/chpc.utah.edu/sys/installdir/r8/python/3.10.3/lib/python3.10/asyncio/base_events.py", line 646, in run_until_complete
+    return future.result()
+  File "/uufs/chpc.utah.edu/sys/installdir/r8/python/3.10.3/lib/python3.10/site-packages/nbclient/client.py", line 965, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/uufs/chpc.utah.edu/sys/installdir/r8/python/3.10.3/lib/python3.10/site-packages/nbclient/client.py", line 862, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+chains = []
+probabilities = []
+for i in range(len(sightlines)):
+    path= directory + '/sampler_' + str(i) + '.h5'
+    reader = emcee.backends.HDFBackend(path)
+    chains.append(reader.get_chain())
+    probabilities.append(reader.get_log_prob())
+------------------
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mAttributeError[0m                            Traceback (most recent call last)
+[0;32m/tmp/ipykernel_1186875/2925193359.py[0m in [0;36m<cell line: 3>[0;34m()[0m
+[1;32m      4[0m     [0mpath[0m[0;34m=[0m [0mdirectory[0m [0;34m+[0m [0;34m'/sampler_'[0m [0;34m+[0m [0mstr[0m[0;34m([0m[0mi[0m[0;34m)[0m [0;34m+[0m [0;34m'.h5'[0m[0;34m[0m[0;34m[0m[0m
+[1;32m      5[0m     [0mreader[0m [0;34m=[0m [0memcee[0m[0;34m.[0m[0mbackends[0m[0;34m.[0m[0mHDFBackend[0m[0;34m([0m[0mpath[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0;32m----> 6[0;31m     [0mchains[0m[0;34m.[0m[0mappend[0m[0;34m([0m[0mreader[0m[0;34m.[0m[0mget_chain[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m      7[0m     [0mprobabilities[0m[0;34m.[0m[0mappend[0m[0;34m([0m[0mreader[0m[0;34m.[0m[0mget_log_prob[0m[0;34m([0m[0;34m)[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m~/.local/lib/python3.10/site-packages/emcee/backends/backend.py[0m in [0;36mget_chain[0;34m(self, **kwargs)[0m
+[1;32m     73[0m [0;34m[0m[0m
+[1;32m     74[0m         """
+[0;32m---> 75[0;31m         [0;32mreturn[0m [0mself[0m[0;34m.[0m[0mget_value[0m[0;34m([0m[0;34m"chain"[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m[1;32m     76[0m [0;34m[0m[0m
+[1;32m     77[0m     [0;32mdef[0m [0mget_blobs[0m[0;34m([0m[0mself[0m[0;34m,[0m [0;34m**[0m[0mkwargs[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+
+[0;32m~/.local/lib/python3.10/site-packages/emcee/backends/hdf.py[0m in [0;36mget_value[0;34m(self, name, flat, thin, discard)[0m
+[1;32m    150[0m     [0;32mdef[0m [0mget_value[0m[0;34m([0m[0mself[0m[0;34m,[0m [0mname[0m[0;34m,[0m [0mflat[0m[0;34m=[0m[0;32mFalse[0m[0;34m,[0m [0mthin[0m[0;34m=[0m[0;36m1[0m[0;34m,[0m [0mdiscard[0m[0;34m=[0m[0;36m0[0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    151[0m         [0;32mif[0m [0;32mnot[0m [0mself[0m[0;34m.[0m[0minitialized[0m[0;34m:[0m[0;34m[0m[0;34m[0m[0m
+[0;32m--> 152[0;31m             raise AttributeError(
+[0m[1;32m    153[0m                 [0;34m"You must run the sampler with "[0m[0;34m[0m[0;34m[0m[0m
+[1;32m    154[0m                 [0;34m"'store == True' before accessing the "[0m[0;34m[0m[0;34m[0m[0m
+
+[0;31mAttributeError[0m: You must run the sampler with 'store == True' before accessing the results
+AttributeError: You must run the sampler with 'store == True' before accessing the results
+
