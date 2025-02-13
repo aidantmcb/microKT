@@ -1,5 +1,9 @@
 import numpy as np
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 def loglikely_2(v, av, sl, **kwargs):
     signal = sl.signals
     sigma = sl.signal_errs
@@ -13,12 +17,14 @@ def loglikely_2(v, av, sl, **kwargs):
 
 def logprior_v(v, v_max = 5, prior_mult = 1, **kwargs):
     if (np.any(v < -8.5)) or (np.any(v > 17.5)):
+        #logger.info('logprior_v tripped')
         return -np.inf
     return 0.0
 
 
 def logprior_davdd(av, AV_base = 5, AV_max = 10):   
     if ((np.any(av < 0))):
+        #logger.info('logprior_davdd tripped')
         return -np.inf
     return 0.0
 
@@ -30,6 +36,8 @@ def logprior_davdd_reg(av,sl, mask = None, **kwargs):
     avstd = sl.voxel_dAVdd_std * 10 # should be 10
     # lp_val = -np.nansum(np.log(np.sqrt(2 * np.pi))) + np.nansum(- 0.5 * np.nansum((av - avmed)**2 / (2 * avstd**2)))# first part might not be needed
     lp_val =  np.nansum(- 0.5 * np.nansum((av - avmed)**2 / (2 * avstd**2)))# first part might not be needed
+
+
 
     return lp_val
 
@@ -46,22 +54,23 @@ def logprior_davdd_reg_group(av,sl, mask = None,  width_factor = 3, **kwargs):
 
 def logprior_davdd_min(av, minval = 0.075):
     if np.any(av < minval):
+        #logger.info('logprior_davdd_min tripped')
         return -np.inf
     else:
         return 0.0
 
 
-def logprob_2(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs):
-    ndim = len(sl.voxel_dAVdd)
-    v = p[ :ndim]
-    av = p[ndim:].reshape(-1, ndim)
-    lp = logprior(v, **kwargs)
-    lp_davdd = logprior_davdd(av, AV_base = sl.dAVdd)
-    lp_davdd_reg = logprior_davdd_reg(av, sl, **kwargs)
-    lp_davdd_reg_group = logprior_davdd_reg_group(av, sl)
-    if (not np.isfinite(lp)) | (not np.isfinite(lp_davdd)) | (not np.isfinite(lp_davdd_reg)):
-        return -np.inf
-    return lp + lp_davdd + lp_davdd_reg +  loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
+# def logprob_2(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs):
+#     ndim = len(sl.voxel_dAVdd)
+#     v = p[ :ndim]
+#     av = p[ndim:].reshape(-1, ndim)
+#     lp = logprior(v, **kwargs)
+#     lp_davdd = logprior_davdd(av, AV_base = sl.dAVdd)
+#     lp_davdd_reg = logprior_davdd_reg(av, sl, **kwargs)
+#     lp_davdd_reg_group = logprior_davdd_reg_group(av, sl)
+#     if (not np.isfinite(lp)) | (not np.isfinite(lp_davdd)) | (not np.isfinite(lp_davdd_reg)):
+#         return -np.inf
+#     return lp + lp_davdd + lp_davdd_reg +  loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
 
 def logprob_avfix(p,sl, av = None,  logprior = logprior_v, loglikely = loglikely_2, **kwargs):
     ndim = len(sl.voxel_dAVdd)
@@ -170,6 +179,7 @@ def logprob_2(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs): 
     lp_davdd_reg = logprior_davdd_reg(av, sl, **kwargs)
     lp_davdd_reg_group = logprior_davdd_reg_group(av, sl)
     if (not np.isfinite(lp)) | (not np.isfinite(lp_davdd)) | (not np.isfinite(lp_davdd_reg)):
+        #logger.info('catch tripped in logprob_2')
         return -np.inf
     return lp + lp_davdd  + lp_davdd_reg + loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
 
@@ -178,6 +188,36 @@ def logprob_fg(p, sl, lp_fore = None, **kwargs):
     ndim = len(sl.voxel_dAVdd)
     
     lprob = logprob_2(p, sl, **kwargs)
+    v = p[ :ndim]
+    av = p[ndim:].reshape(-1, ndim) #what shape is dAVddd? 
+
+    ### Added 05.08 ###
+    lprior_av_min = logprior_davdd_min(av, **kwargs)
+    lprob = lprob + lprior_av_min
+
+    lp_fore_v = lp_fore.logprior_foreground_v(v, sl.bins[1:])
+    # lp_fore_av = lp_fore.logprior_foreground_av(av, sl.bins[1:])
+    return lprob + lp_fore_v #+ lp_fore_av
+
+# Added 2025.02.13 to test removing regs
+def logprob_dropreg(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwargs): ## NEW AS OF 05.16LIke.
+    ndim = len(sl.voxel_dAVdd)
+    v = p[ :ndim]
+    av = p[ndim:].reshape(-1, ndim)
+    lp = logprior(v, **kwargs)
+    lp_davdd = logprior_davdd(av, AV_base = sl.dAVdd)
+    lp_davdd_reg = 0#= logprior_davdd_reg(av, sl, **kwargs)
+    lp_davdd_reg_group = 0# logprior_davdd_reg_group(av, sl)
+    if (not np.isfinite(lp)) | (not np.isfinite(lp_davdd)) | (not np.isfinite(lp_davdd_reg)):
+        #logger.info('catch tripped in logprob_2')
+        return -np.inf
+    return lp + lp_davdd  + lp_davdd_reg + loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
+
+
+def logprob_fg_dropreg(p, sl, lp_fore = None, **kwargs):
+    ndim = len(sl.voxel_dAVdd)
+    
+    lprob = logprob_dropreg(p, sl, **kwargs)
     v = p[ :ndim]
     av = p[ndim:].reshape(-1, ndim) #what shape is dAVddd? 
 
