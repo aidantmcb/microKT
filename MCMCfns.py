@@ -213,7 +213,7 @@ def logprob_dropreg(p, sl, logprior = logprior_v, loglikely = loglikely_2, **kwa
         return -np.inf
     return lp + lp_davdd  + lp_davdd_reg + loglikely_2(v, av, sl = sl, **kwargs) + lp_davdd_reg_group # group term added 10.13
 
-
+# Added 2025.02.13 to test removing regs
 def logprob_fg_dropreg(p, sl, lp_fore = None, **kwargs):
     ndim = len(sl.voxel_dAVdd)
     

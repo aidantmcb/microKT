@@ -7,3 +7,4 @@ RUNS/
 RUNS_FG/
 nohup.out
 *.log
+*.out
